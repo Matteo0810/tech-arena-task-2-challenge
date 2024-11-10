@@ -5,6 +5,7 @@
 //
 #include <executer/DataExecuter.h>
 #include <common/Expression.h>
+
 class CEEngine {
 public:
     /**
@@ -29,6 +30,7 @@ public:
      * is called.
      */
     void prepare();
+
     /**
      * The constructor function of cardinality estimation.
      * @param num Size of the initial data set.
@@ -39,6 +41,10 @@ public:
 
 private:
     DataExecuter *dataExecuter;
+    int size;
+
+    std::vector<int> columnA;
+    std::vector<int> columnB;
 };
 
 #endif
