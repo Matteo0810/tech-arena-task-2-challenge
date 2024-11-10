@@ -3,3 +3,6 @@
 # ignore ide
 .idea/
 .vscode/
+
+# ignore build folder
+build/

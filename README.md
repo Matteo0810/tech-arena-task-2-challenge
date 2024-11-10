@@ -1,3 +1,16 @@
+# Note
+
+## Build the project
+`make build` in the root directory
+
+## FAQ
+### "Cmake" not found
+> Install CMake command (It depends on your OS)
+### "make" not found
+> Install make command (It depends on your OS)
+### "g++" not found
+> Install g++ command (It depends on your OS)
+
 # Project Overview
 This project is the engineering package that contestants need to download for the competition. Contestants are required to implement the CEEngine class within the project.
 The evaluation program will compile the modified project code submitted by the contestants and test the interfaces of the CEEngine class implemented by the contestants.
