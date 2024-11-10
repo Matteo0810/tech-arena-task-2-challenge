@@ -16,7 +16,7 @@ void CEEngine::insertTuple(const std::vector<int>& tuple)
 
 void CEEngine::deleteTuple(const std::vector<int>& tuple, int tupleId)
 {
-    if(tupleId <= this->total_size) {
+    if(tupleId < this->total_size) {
         this->columnA.erase(this->columnA.begin() + tupleId);
         this->columnB.erase(this->columnB.begin() + tupleId);
     }
@@ -44,26 +44,25 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
         }
     }
 
-    const int estimation = ((sample_count) / this->sample_size) * this->total_size;
+    const int estimation = (sample_count / this->sample_size) * this->total_size;
     return estimation;
 }
 
 void CEEngine::prepare()
 {   
     // percentage to take in all columns
-    const int percentage = 10.;
+    const int percentage = 10;
 
     // real time update of theses variables
     this->total_size = this->columnA.size(); // we can either choose column A or B
-    this->sample_size = std::round(this->total_size * (percentage / 100.));
-    
-    std::cout << "sample size: " << this->sample_size << std::endl;
-    std::cout << "total size: " << this->total_size << std::endl;
 
+    this->sample_size = std::round(this->total_size * (percentage / 100.));
+    this->sample.resize(this->sample_size);
+    
     std::vector<int> indexes(this->total_size);
     for (int i = 0; i < this->total_size; i++) 
     {
-        indexes.emplace_back(i);
+        indexes[i] = i;
     }
     
     // shuffle indexes to put randomely row
