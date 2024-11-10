@@ -41,7 +41,11 @@ public:
 
 private:
     DataExecuter *dataExecuter;
+
     int size;
+    int sample_size;
+
+    std::vector<std::vector<int>> sample;
 
     std::vector<int> columnA;
     std::vector<int> columnB;

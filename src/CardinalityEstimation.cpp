@@ -1,7 +1,7 @@
 //
 // You should modify this file.
 //
-#include <stdexcept>
+#include <algorithm>
 
 #include <common/Root.h>
 #include <common/Expression.h>
@@ -15,74 +15,80 @@ void CEEngine::insertTuple(const std::vector<int>& tuple)
 }
 
 void CEEngine::deleteTuple(const std::vector<int>& tuple, int tupleId)
-{
+{    
+    /*if(tupleId >= 0 && tupleId <= this->columnA.size())
+    {
+        this->columnA[tupleId] = -1;
+    }
+
+    if(tupleId >= 0 && tupleId <= this->columnB.size())
+    {
+        this->columnB[tupleId] = -1;
+    }*/
+
+    // TODO: avoid theses functions because of their memory use
     this->columnA.erase(this->columnA.begin() + tupleId);
     this->columnB.erase(this->columnB.begin() + tupleId);
 }
 
 int CEEngine::query(const std::vector<CompareExpression>& quals)
-{
-    // maximum of two constraint conditions (one for each column)
-    if (quals.size() < 1 || quals.size() > 2)
-    {
-        throw std::invalid_argument("Received zero or more than two constraints conditions.");
-    }
+{   
+    int sample_count = 0;
 
-    int estimation = 0;
-
-    // We have to find all tuple that meets both CompareExpression A and B.
-    // for instance: A > 0 (s1) and B = 100 (s2)
-
-    for (int i = 0; i < this->columnA.size(); i++) 
+    // apply quals and do the estimation
+    for (int i = 0; i < this->sample_size; i++)
     {
         auto qualA = quals[0];
+        auto row = this->sample[i];
+
         bool match = false;
-
-        // check critera A
-        if (
-            (qualA.compareOp == GREATER && qualA.value > this->columnA[i])
-            || (qualA.compareOp == EQUAL && qualA.value == this->columnA[i])
-        )
+        for (auto qual : quals)
         {
-            match = true;
+            match = (qual.compareOp == GREATER && qual.value > row[qual.columnIdx])
+                || (qual.compareOp == EQUAL && qual.value == row[qual.columnIdx]);
         }
 
-        // if critera B exists
-        if(quals.size() > 1)
+        if (match)
         {
-            auto qualB = quals[1];
-            if (
-                (qualB.compareOp == GREATER && qualB.value > this->columnB[i])
-                || (qualB.compareOp == EQUAL && qualB.value == this->columnB[i])
-            )
-            {
-                match = true;
-            }
-            else
-            {
-                // it's not a match if exists because we have to match both criteria A and B
-                match = false;
-            }
-        }
-
-        if(match)
-        {
-            estimation++;
+            sample_count++;
         }
     }
-    
-    // The cardinality estimation result is the size of | s1 ∩ s2 |
+
+    const int estimation = ((sample_count) / this->sample_size) * this->columnA.size();
     return estimation;
 }
 
 void CEEngine::prepare()
-{
-    // TODO: prepare procedure
+{   
+    const int percentage = 10.;
+
+    this->sample_size = std::round(this->columnA.size() * (percentage / 100.));
+    std::cout << this->columnA.size() << std::endl;
+
+    std::vector<int> indexes(this->sample_size);
+    
+    for (int i = 0; i < this->sample_size; i++) 
+    {
+        indexes[i] = i;
+    }
+    
+    std::random_shuffle(indexes.begin(), indexes.end());
+    
+    for (int i = 0; i < this->sample_size; i++) 
+    {
+        const int index = indexes[i];
+
+        this->sample[i] = {
+            this->columnA[index],
+            this->columnB[index]
+        };
+    }
 }
 
 CEEngine::CEEngine(int num, DataExecuter *dataExecuter)
 {
     this->dataExecuter = dataExecuter;
+
     this->size = num;
 
     // initialize columnA & columnB
@@ -90,6 +96,6 @@ CEEngine::CEEngine(int num, DataExecuter *dataExecuter)
     this->columnB = std::vector<int>();
 
     // allocate a maximum of num to the column
-    this->columnA.reserve(this->size);
-    this->columnB.reserve(this->size);
+    this->columnA.reserve(num);
+    this->columnB.reserve(num);
 }
