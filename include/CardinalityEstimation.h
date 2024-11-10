@@ -30,7 +30,7 @@ public:
      * is called.
      */
     void prepare();
-
+    
     /**
      * The constructor function of cardinality estimation.
      * @param num Size of the initial data set.
@@ -42,8 +42,8 @@ public:
 private:
     DataExecuter *dataExecuter;
 
-    int size;
     int sample_size;
+    int total_size;
 
     std::vector<std::vector<int>> sample;
 
