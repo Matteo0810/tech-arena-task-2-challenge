@@ -38,7 +38,6 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
         while (match && j < quals.size()) 
         {
             auto qual = quals[i];
-            std::cout << qual.columnIdx << ": " << row.size() << std::endl;
             
             if(qual.columnIdx >= 0 && qual.columnIdx < row.size()) 
             {
@@ -67,6 +66,7 @@ void CEEngine::prepare()
     this->sample_size = std::round(this->total_size * (SAMPLE_PERCENTAGE / 100.));
 
     this->sample.resize(this->sample_size);
+    
     
     std::vector<int> indexes(this->total_size);
     for (int i = 0; i < this->total_size; i++) 
