@@ -1,8 +1,6 @@
 //
 // You should modify this file.
 //
-#include <algorithm>
-
 #include <common/Root.h>
 #include <common/Expression.h>
 
@@ -30,12 +28,19 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
     for (int i = 0; i < this->sample_size; i++)
     {
         auto row = this->sample[i];
-        bool match = false;
+        bool match = true;
 
-        for (auto qual : quals)
+        int j = 0;
+        while (match && j < quals.size()) 
         {
-            match = (qual.compareOp == GREATER && qual.value > row[qual.columnIdx])
-                || (qual.compareOp == EQUAL && qual.value == row[qual.columnIdx]);
+            auto qual = quals[i];
+            
+            if(qual.columnIdx >= 0 && qual.columnIdx < row.size()) {
+                match = (qual.compareOp == GREATER && qual.value > row[qual.columnIdx])
+                    || (qual.compareOp == EQUAL && qual.value == row[qual.columnIdx]);
+            }
+
+            j++;
         }
 
         if (match)
@@ -57,8 +62,10 @@ void CEEngine::prepare()
     this->total_size = this->columnA.size(); // we can either choose column A or B
 
     this->sample_size = std::round(this->total_size * (percentage / 100.));
+
     this->sample.resize(this->sample_size);
     
+    // TODO: optimze this part (to avoid loops)
     std::vector<int> indexes(this->total_size);
     for (int i = 0; i < this->total_size; i++) 
     {
