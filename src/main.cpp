@@ -3,6 +3,8 @@
 
 void solve(const int initSize, const int opSize)
 {
+    std::cout << "Execution with " << initSize << " data size and " << opSize << " operations" << std::endl;
+    
     auto start = std::chrono::high_resolution_clock::now();
     double score = 0;
     int cnt = 0;
@@ -37,7 +39,15 @@ int main(int argc, char *argv[])
 {
     // Initial data size (max: 30'000'000)
     // Number of operations (max operations: 20'000'000)
-    std::cout << "Execution with 100'000 data size and 10'000 operations" << std::endl;
+
+    // case 1
     solve(100'000, 10'000);
+
+    // case 2
+    solve(1'000'000, 100'000);
+
+    // case 3
+    solve(10'000'000, 1'000'000);
+    
     return EXIT_SUCCESS;
 }

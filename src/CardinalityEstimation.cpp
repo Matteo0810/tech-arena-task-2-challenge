@@ -6,6 +6,9 @@
 
 #include <CardinalityEstimation.h>
 
+// percentage to take between all columns
+const int SAMPLE_PERCENTAGE = 10;
+
 void CEEngine::insertTuple(const std::vector<int>& tuple)
 {
     this->columnA.emplace_back(tuple[0]);
@@ -14,7 +17,8 @@ void CEEngine::insertTuple(const std::vector<int>& tuple)
 
 void CEEngine::deleteTuple(const std::vector<int>& tuple, int tupleId)
 {
-    if(tupleId < this->total_size) {
+    if(tupleId >= 0 && tupleId < this->total_size) 
+    {
         this->columnA.erase(this->columnA.begin() + tupleId);
         this->columnB.erase(this->columnB.begin() + tupleId);
     }
@@ -34,8 +38,10 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
         while (match && j < quals.size()) 
         {
             auto qual = quals[i];
+            std::cout << qual.columnIdx << ": " << row.size() << std::endl;
             
-            if(qual.columnIdx >= 0 && qual.columnIdx < row.size()) {
+            if(qual.columnIdx >= 0 && qual.columnIdx < row.size()) 
+            {
                 match = (qual.compareOp == GREATER && qual.value > row[qual.columnIdx])
                     || (qual.compareOp == EQUAL && qual.value == row[qual.columnIdx]);
             }
@@ -54,18 +60,14 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
 }
 
 void CEEngine::prepare()
-{   
-    // percentage to take in all columns
-    const int percentage = 10;
-
+{  
     // real time update of theses variables
     this->total_size = this->columnA.size(); // we can either choose column A or B
 
-    this->sample_size = std::round(this->total_size * (percentage / 100.));
+    this->sample_size = std::round(this->total_size * (SAMPLE_PERCENTAGE / 100.));
 
     this->sample.resize(this->sample_size);
     
-    // TODO: optimze this part (to avoid loops)
     std::vector<int> indexes(this->total_size);
     for (int i = 0; i < this->total_size; i++) 
     {
