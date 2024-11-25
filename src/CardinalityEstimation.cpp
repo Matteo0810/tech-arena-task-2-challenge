@@ -7,7 +7,7 @@
 #include <CardinalityEstimation.h>
 
 // percentage to take between all columns
-const int SAMPLE_PERCENTAGE = 10;
+const int SAMPLE_PERCENTAGE = 10; // %
 
 void CEEngine::insertTuple(const std::vector<int>& tuple)
 {
@@ -31,24 +31,14 @@ int CEEngine::query(const std::vector<CompareExpression>& quals)
     // apply quals and do the estimation
     for (int i = 0; i < this->sample_size; i++)
     {
-        auto row = this->sample[i];
-        bool match = true;
+        std::vector<int> row = { this->columnA[i], this->columnB[i] };
 
-        int j = 0;
-        while (match && j < quals.size()) 
-        {
-            auto qual = quals[i];
-            
-            if(qual.columnIdx >= 0 && qual.columnIdx < row.size()) 
-            {
-                match = (qual.compareOp == GREATER && qual.value > row[qual.columnIdx])
-                    || (qual.compareOp == EQUAL && qual.value == row[qual.columnIdx]);
-            }
-
-            j++;
-        }
-
-        if (match)
+        if (
+            (quals[0].compareOp == GREATER && quals[0].value < row[0])
+                    || (quals[0].compareOp == EQUAL && quals[0].value == row[0])
+            || (quals.size() > 1 && (quals[1].compareOp == GREATER && quals[1].value < row[1])
+                    || (quals[1].compareOp == EQUAL && quals[1].value == row[1]))
+        )
         {
             sample_count++;
         }
@@ -64,24 +54,6 @@ void CEEngine::prepare()
     this->total_size = this->columnA.size(); // we can either choose column A or B
 
     this->sample_size = std::round(this->total_size * (SAMPLE_PERCENTAGE / 100.));
-
-    this->sample.resize(this->sample_size);
-    
-    
-    std::vector<int> indexes(this->total_size);
-    for (int i = 0; i < this->total_size; i++) 
-    {
-        indexes[i] = i;
-    }
-    
-    // shuffle indexes to put randomely row
-    std::random_shuffle(indexes.begin(), indexes.end());
-    
-    for (int i = 0; i < this->sample_size; i++) 
-    {
-        const int index = indexes[i];
-        this->sample[i] = { this->columnA[index], this->columnB[index] };
-    }
 }
 
 CEEngine::CEEngine(int num, DataExecuter *dataExecuter)

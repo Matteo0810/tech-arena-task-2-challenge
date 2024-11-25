@@ -25,6 +25,7 @@ public:
      * @return return estimated cardinality result.
      */
     int query(const std::vector<CompareExpression>& quals);
+    
     /**
      * Preprocessing function of the cardinality estimation algorithm. This function is executed before each operation
      * is called.
@@ -45,7 +46,7 @@ private:
     int sample_size;
     int total_size;
 
-    std::vector<std::vector<int>> sample;
+    //std::vector<std::vector<int>> sample;
 
     std::vector<int> columnA;
     std::vector<int> columnB;
