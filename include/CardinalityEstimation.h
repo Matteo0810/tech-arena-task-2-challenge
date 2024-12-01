@@ -3,8 +3,12 @@
 //
 // You should modify this file.
 //
+#include <unordered_set>
+
 #include <executer/DataExecuter.h>
 #include <common/Expression.h>
+
+const int SAMPLE_PERCENTAGE = 10; // %
 
 class CEEngine {
 public:
@@ -45,11 +49,10 @@ private:
 
     int sample_size;
     int total_size;
+    int num_processed;
 
-    //std::vector<std::vector<int>> sample;
-
-    std::vector<int> columnA;
-    std::vector<int> columnB;
+    std::vector<std::pair<int, int>> table;
+    std::vector<std::pair<int, int>> reservoir;
 };
 
 #endif

@@ -37,7 +37,7 @@ void solve(const int initSize, const int opSize)
 
 int main(int argc, char *argv[])
 {
-    // Initial data size (max: 30'000'000)
+    // Initial data size (max: 20'000'000)
     // Number of operations (max operations: 20'000'000)
 
     // case 1
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     solve(1'000'000, 100'000);
 
     // case 3
-    solve(10'000'000, 1'000'000);
+    //solve(10'000'000, 1'000'000);
     
     return EXIT_SUCCESS;
 }
